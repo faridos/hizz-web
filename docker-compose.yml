@@ -1,0 +1,56 @@
+version: "2.4"
+
+services:
+  app-rdr:
+    build:
+      context: .
+      dockerfile: docker/local/python/Dockerfile
+    ports:
+      - "8081"
+    volumes:
+      - ./app:/app
+      - /opt/hizz-web/local/uploads:/app/uploads
+      - /opt/hizz-web/local/customers_data/:/customers_data/
+
+    volumes_from:
+      - container:nginx-proxy
+
+
+    command: sh -c "python manage.py wait_for_db && uwsgi --socket :8081 --http :8000 --buffer-size=32768 --module app.wsgi"
+#    command: sh -c "python manage.py wait_for_db && uwsgi  --http :8081 --module app.wsgi" # not working with nginx proxy
+#      sh -c "python manage.py wait_for_db && uwsgi --http :8000 --module app.wsgi"
+#      sh -c "python manage.py wait_for_db && uwsgi --ini uwsgi.ini uwsgi --module app.wsgi"
+#      gunicorn -w 4 app.wsgi -b 0.0.0.0:8080"
+
+    env_file:
+      - ./envfiles/.local_envfile
+
+    depends_on:
+      - db-rdr
+#      - nginx
+
+    environment:
+      - DJANGO_SETTINGS_MODULE=app.settings_local
+      - VIRTUAL_HOST=vimmoda-apirdr.lvh.me
+      - VIRTUAL_PROTO= uwsgi
+      - LETSENCRYPT_HOST=vimmoda-apirdr.lvh.me
+      - LETSENCRYPT_EMAIL=mm@vimmoda.com
+
+  db-rdr:
+    image: store/oracle/mysql-enterprise-server:5.7
+    container_name: db-mysql-rdr-local
+    restart: always
+    volumes:
+      - ./sql_scripts/local/:/docker-entrypoint-initdb.d/
+      - my-local-datavolume:/var/lib/mysql
+#    command: mysqld --general-log=1 --general-log-file=/var/log/mysql/general-log.log
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+volumes:
+  my-local-datavolume:
+networks:
+  default:
+    external:
+      name: nginx-proxy

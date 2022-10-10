@@ -1,0 +1,13 @@
+image: docker:stable
+
+options:
+  docker: true
+
+pipelines:
+  default:
+    - step:
+        script:
+          - ci/dependencies.sh
+          - docker-compose run app sh -c "python manage.py test"
+          - docker-compose down
+

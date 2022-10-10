@@ -1,0 +1,12 @@
+-r base.txt
+
+django-debug-toolbar
+#did not work out:
+#djangorestframework-jwt #abondonned project, don't use it
+django-split-settings
+gunicorn==19.9.*
+uwsgi
+coreapi
+django-redis
+xhtml2pdf
+

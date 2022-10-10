@@ -1,0 +1,4 @@
+LOCAL_DB_HOST=db-hizz-web
+LOCAL_DB_NAME=hizz_web_db
+LOCAL_DB_USER=root
+LOCAL_DB_PASS=root
