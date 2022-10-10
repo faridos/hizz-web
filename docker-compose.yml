@@ -1,16 +1,14 @@
 version: "2.4"
 
 services:
-  app-rdr:
+  app-hizz-web:
     build:
       context: .
       dockerfile: docker/local/python/Dockerfile
     ports:
       - "8081"
     volumes:
-      - ./app:/app
-      - /opt/hizz-web/local/uploads:/app/uploads
-      - /opt/hizz-web/local/customers_data/:/customers_data/
+      - ./aahizz:/aahizz
 
     volumes_from:
       - container:nginx-proxy
@@ -26,28 +24,30 @@ services:
       - ./envfiles/.local_envfile
 
     depends_on:
-      - db-rdr
+      - db-hizz-web
 #      - nginx
 
     environment:
       - DJANGO_SETTINGS_MODULE=app.settings_local
-      - VIRTUAL_HOST=vimmoda-apirdr.lvh.me
+      - VIRTUAL_HOST=api.hizz.lvh.me
       - VIRTUAL_PROTO= uwsgi
-      - LETSENCRYPT_HOST=vimmoda-apirdr.lvh.me
-      - LETSENCRYPT_EMAIL=mm@vimmoda.com
+      - LETSENCRYPT_HOST=api.hizz.lvh.me
+      - LETSENCRYPT_EMAIL=ferid.maghraoui@gmail.com
 
-  db-rdr:
+  db-hizz-web:
     image: store/oracle/mysql-enterprise-server:5.7
-    container_name: db-mysql-rdr-local
+    container_name: db-mysql-hizz-local
     restart: always
     volumes:
       - ./sql_scripts/local/:/docker-entrypoint-initdb.d/
       - my-local-datavolume:/var/lib/mysql
 #    command: mysqld --general-log=1 --general-log-file=/var/log/mysql/general-log.log
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=root
+    env_file:
+      - ./envfiles/.local_envfile
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=root
+#      - MYSQL_USER=root
+#      - MYSQL_PASSWORD=root
 volumes:
   my-local-datavolume:
 networks:

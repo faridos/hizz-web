@@ -11,9 +11,7 @@ services:
       - "8000"
     volumes:
       - ./app:/app
-      - /opt/vida/hizz-web/customers_data:/customers_data
-    #      - ./uploads:/uploads
-    #      - /opt/vida/dev/customers_data:/customers_data
+#      - /opt/vida/hizz-web/customers_data:/customers_data
 
     volumes_from:
       - container:traefik_vimmodadev
